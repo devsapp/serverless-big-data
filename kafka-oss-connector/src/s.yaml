@@ -1,0 +1,81 @@
+edition: 1.0.0          #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范。
+name: kafka_to_oss      #  项目名称。
+access: default         #  密钥别名。
+
+vars:
+  service:
+    name: "{{serviceName}}"
+    description: 'demo for kafka batch etl to oss'
+    internetAccess: true
+    role:
+    vpcConfig: # VPC配置, 配置后function可以访问指定VPC
+      vpcId: "{{vpcID}}"              # VPC ID
+      securityGroupId: "{{securityGroupID}}"   # 安全组ID
+      vswitchIds: # 交换机 ID 列表
+        - "{{vswitchID}}"
+    logConfig: # log配置，function产生的log会写入这里配置的logstore
+      project: "{{slsProject}}"                  # loghub中的project名称
+      logstore: "{{logstore}}"                 # loghub中的logstore名称
+      enableRequestMetrics: true     # RequestMetrics开关，取值true/false
+      enableInstanceMetrics: true    # InstanceMetrics开关，取值true/false
+      logBeginRule: 'DefaultRegex'
+  Payload:
+      consumer_service_name: "{{serviceName}}"
+      topic_name: "{{topicName}}"
+      consumer_group_id: "{{consumerGroupID}}"
+      kafka_instance_id: "{{kafkaInstanceID}}"
+      bucket_name: "{{bucketName}}"
+      kafka_endpoint: "{{kafkaEndpoint}}"
+
+services:
+  scheduler: #  服务名称。
+    component: devsapp/fc  # 组件名称。
+    actions:
+      pre-deploy: # 在deploy之前运行
+        - run: pip install -r requirements.txt -t .      # 要执行的系统命令，类似于一种钩子的形式
+          path: ./scheduler
+    props: #  组件的属性值。
+      region: "{{region}}"
+      service: ${vars.service}
+      function:
+        name: scheduler
+        description: 'this is test'
+        codeUri: './scheduler'
+        handler: 'index.handler'
+        environmentVariables: ${vars.Payload}
+        memorySize: 128
+        runtime: python3
+        timeout: 60
+        asyncConfiguration:
+          maxAsyncRetryAttempts: 0
+          statefulInvocation: true
+      triggers:
+        - name: timerTrigger            # 触发器名称
+          type: timer                   # 触发器类型
+          config:
+            cronExpression: '0 0/1 * * * ?' # 时间触发器表达式，支持两种设置：@every、cron 表达式
+            enable: true                  # 是否启用该触发器
+            payload: | # 代表触发器事件本身的输入内容
+              {  
+                "consumer_function_name":"consumer"
+              }
+  consumer: #  服务名称。
+    component: devsapp/fc  # 组件名称。
+    actions:
+      pre-deploy: # 在deploy之前运行
+        - run: pip install -r requirements.txt -t .      # 要执行的系统命令，类似于一种钩子的形式
+          path: ./consumer
+    props: #  组件的属性值。
+      region: "{{region}}"
+      service: ${vars.service}
+      function:
+        name: consumer
+        description: 'this is test'
+        codeUri: './consumer'
+        handler: 'index.handler'
+        memorySize: 128
+        runtime: python3
+        timeout: 60
+        asyncConfiguration:
+          maxAsyncRetryAttempts: 0
+          statefulInvocation: true
