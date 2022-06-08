@@ -13,12 +13,7 @@ vars:
       securityGroupId: "{{securityGroupID}}"   # 安全组ID
       vswitchIds: # 交换机 ID 列表
         - "{{vswitchID}}"
-    logConfig: # log配置，function产生的log会写入这里配置的logstore
-      project: "{{slsProject}}"                  # loghub中的project名称
-      logstore: "{{logstore}}"                 # loghub中的logstore名称
-      enableRequestMetrics: true     # RequestMetrics开关，取值true/false
-      enableInstanceMetrics: true    # InstanceMetrics开关，取值true/false
-      logBeginRule: 'DefaultRegex'
+    logConfig: auto
   Payload:
       consumer_service_name: "{{serviceName}}"
       topic_name: "{{topicName}}"
