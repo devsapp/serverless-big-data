@@ -39,7 +39,7 @@ services:
         handler: 'index.handler'
         environmentVariables: ${vars.Payload}
         memorySize: 128
-        runtime: python3
+        runtime: python3.9
         timeout: 60
         asyncConfiguration:
           maxAsyncRetryAttempts: 0
@@ -69,7 +69,7 @@ services:
         codeUri: './consumer'
         handler: 'index.handler'
         memorySize: 128
-        runtime: python3
+        runtime: python3.9
         timeout: 60
         asyncConfiguration:
           maxAsyncRetryAttempts: 0

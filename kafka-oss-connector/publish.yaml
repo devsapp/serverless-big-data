@@ -2,7 +2,7 @@ Type: Application
 Name: KafkaToOSSConnector
 Provider:
   - 阿里云
-Version: 0.0.18
+Version: 0.0.19
 Description: Kafka to OSS Connector
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
