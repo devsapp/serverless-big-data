@@ -2,7 +2,7 @@ Type: Application
 Name: KafkaToOSSConnector
 Provider:
   - 阿里云
-Version: 0.0.19
+Version: 0.0.20
 Description: Kafka to OSS Connector
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
@@ -76,10 +76,13 @@ Parameters:
       default: alikafka_post-cn-****
       description: kafka 实例 id
     bucketName:
-      title: bucket name
+      title: OSS存储桶名
       type: string
-      default: bucket
-      description: 目标 oss 的 bucket 名称，用于存储转储结果
+      default: ""
+      description: OSS存储桶名(注意和函数同地域)
+      x-bucket:
+        dependency:
+          - region
     kafkaEndpoint:
       title: kafka endpoint
       type: string
