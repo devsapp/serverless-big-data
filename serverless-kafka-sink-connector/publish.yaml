@@ -2,7 +2,7 @@ Type: Application
 Name: KafkaSinkConnector
 Provider:
   - 阿里云
-Version: 0.0.1
+Version: 0.0.3
 Description: 函数计算 kafka sink connector
 HomePage: https://github.com/devsapp/serverless-io-sink
 Tags:
@@ -59,14 +59,6 @@ Parameters:
       enum:
         - customized
         - cloudEvent
-    batchOrNot:
-      title: 输入消息是否为批量消息
-      type: string
-      default: "False"
-      description: 输入消息的类型：是否为批量消息
-      enum:
-        - "True"
-        - "False"
     vpcId:
       title: kafka 实例所在 vpc id
       type: string
@@ -92,3 +84,11 @@ Parameters:
       type: string
       default: topic-a
       description: kafka 实例 topic name，数据将被放入该 topic 中
+    batchOrNot:
+      title: 输入消息是否为批量消息
+      type: string
+      default: "False"
+      description: 输入消息的类型：是否为批量消息
+      enum:
+        - "True"
+        - "False"

@@ -27,8 +27,8 @@ services:
     component: devsapp/fc  # 组件名称。
     actions:
       pre-deploy: # 在deploy之前运行
-        - run: pip install -r requirements.txt -t .      # 要执行的系统命令，类似于一种钩子的形式
-          path: ./scheduler
+        - run: s build --use-docker      # 要执行的系统命令，类似于一种钩子的形式
+          path: ./
     props: #  组件的属性值。
       region: "{{region}}"
       service: ${vars.service}
@@ -39,7 +39,7 @@ services:
         handler: 'index.handler'
         environmentVariables: ${vars.Payload}
         memorySize: 128
-        runtime: python3.9
+        runtime: python3
         timeout: 60
         asyncConfiguration:
           maxAsyncRetryAttempts: 0
@@ -58,8 +58,8 @@ services:
     component: devsapp/fc  # 组件名称。
     actions:
       pre-deploy: # 在deploy之前运行
-        - run: pip install -r requirements.txt -t .      # 要执行的系统命令，类似于一种钩子的形式
-          path: ./consumer
+        - run: s build --use-docker      # 要执行的系统命令，类似于一种钩子的形式
+          path: ./
     props: #  组件的属性值。
       region: "{{region}}"
       service: ${vars.service}
@@ -69,7 +69,7 @@ services:
         codeUri: './consumer'
         handler: 'index.handler'
         memorySize: 128
-        runtime: python3.9
+        runtime: python3
         timeout: 60
         asyncConfiguration:
           maxAsyncRetryAttempts: 0

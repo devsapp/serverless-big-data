@@ -100,7 +100,7 @@ Poller Service 从源端拉取数据后，再推送给本应用对应的 Sink Se
 1. 进入应用项目工程下，在 s.yaml 查找应用初始化时输入的 `batchOrNot` 值，若：
    - `batchOrNot` 为 False：将文件 event-template/sink-single-event.json 中的值修改为目标值后，执行 `s sink invoke --event-file event-template/sink-single-event.json` 进行函数调用
    - `batchOrNot` 为 True：将文件 event-template/sink-batch-event.json 中的值修改为目标值后，执行 `s sink invoke --event-file event-template/sink-batch-event.json` 进行函数调用
-2. 函数调用完成后，可以登陆到 [tablestore 控制台](https://otsnext.console.aliyun.com/)查看目标数据表中是否已经写入数据。
+2. 函数调用完成后，可以登陆到 [kafka 控制台](https://kafka.console.aliyun.com/)查看目标数据表中是否已经写入数据。
 
 
 ### 高级功能
