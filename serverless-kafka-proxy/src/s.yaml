@@ -1,0 +1,81 @@
+edition: 1.0.0          #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范。
+name: KafkaProxy     #  项目名称。
+access: default         #  密钥别名。
+
+vars:
+  service:
+    name: "{{serviceName}}"
+    description: 'fc-kafka sink connector application'
+    internetAccess: true
+    role:
+    logConfig: auto
+    vpcConfig: # VPC配置, 配置后function可以访问指定VPC
+      vpcId: "{{vpcId}}"              # VPC ID
+      securityGroupId: "{{securityGroupId}}"    # 安全组ID
+      vswitchIds: # 交换机 ID 列表
+        - "{{vswitchIds}}"
+  sinkEnv:
+    SINK_CONFIG: '{"eventSchema": "{{eventSchema}}","batchOrNot": "{{batchOrNot}}","bootstrapServers": "{{bootstrapServers}}","topicName": "{{topicName}}"}'
+
+
+services:
+  transform: #  服务名称。
+    component: devsapp/fc  # 组件名称。
+    actions:
+      pre-deploy: # 在deploy之前运行
+        - run: s build --use-docker      # 要执行的系统命令，类似于一种钩子的形式
+          path: ./
+    props: #  组件的属性值。
+      region: "{{region}}"
+      service: ${vars.service}
+      function:
+        name: transform
+        description: 'this is serverless sink connect framework transform function'
+        codeUri: './transform'
+        handler: 'index.handler'
+        memorySize: 128
+        runtime: nodejs12
+        timeout: 600
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - POST
+
+  sink: #  服务名称。
+    component: devsapp/fc  # 组件名称。
+    actions:
+      pre-deploy: # 在deploy之前运行
+        - run: s build --use-docker     # 要执行的系统命令，类似于一种钩子的形式
+          path: ./
+    props: #  组件的属性值。
+      region: "{{region}}"
+      service: ${vars.service}
+      function:
+        name: sink
+        description: 'this is serverless sink connect framework sink function'
+        codeUri: './sink'
+        handler: 'index.handler'
+        environmentVariables: ${vars.sinkEnv}
+        memorySize: 128
+        initializer: 'index.initialize'
+        initializationTimeout: 60
+        instanceLifecycleConfig:
+          preStop:
+            handler: 'index.destroy'
+            timeout: 3
+        runtime: python3.9
+        timeout: 600
+        asyncConfiguration:
+          maxAsyncRetryAttempts: 0
+          destination:
+            onFailure: "{{failureDestinationNotification}}"
+      triggers:
+        - name: httpTrigger
+          type: http
+          config:
+            authType: anonymous
+            methods:
+              - POST

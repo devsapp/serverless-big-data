@@ -1,8 +1,8 @@
 Type: Application
-Name: KafkaSinkConnector
+Name: KafkaHTTPProxy
 Provider:
   - 阿里云
-Version: 0.0.3
+Version: 0.0.1
 Description: 函数计算 kafka sink connector
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
@@ -21,8 +21,6 @@ Parameters:
   required: # 必填项
     - region
     - serviceName
-    - transformFunctionName
-    - sinkFunctionName
     - eventSchema
     - batchOrNot
     - vpcId
@@ -30,6 +28,7 @@ Parameters:
     - vswitchIds
     - bootstrapServers
     - topicName
+    - failureDestinationNotification
   properties:
     region:
       title: 地域
@@ -39,18 +38,8 @@ Parameters:
     serviceName:
       title: 服务名
       type: string
-      default: kafka_sink_connector
+      default: kafka_proxy
       description: 服务名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
-    transformFunctionName:
-      title: transform 函数名
-      type: string
-      default: transform
-      description: 数据预处理函数名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
-    sinkFunctionName:
-      title: sink 函数名
-      type: string
-      default: sink
-      description: 数据投递函数名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
     eventSchema:
       title: 消息传递的 shema 类型
       type: string
@@ -92,3 +81,8 @@ Parameters:
       enum:
         - "True"
         - "False"
+    failureDestinationNotification:
+      title: 执行失败死信队列 destination resource arn
+      type: string
+      default: acs:mns:xxx:xxx:/queues/xxx/messages
+      description: kafka 实例 topic name，数据将被放入该 topic 中
