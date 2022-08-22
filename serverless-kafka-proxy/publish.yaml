@@ -2,8 +2,8 @@ Type: Application
 Name: KafkaHTTPProxy
 Provider:
   - 阿里云
-Version: 0.0.1
-Description: 函数计算 kafka sink connector
+Version: 0.0.6
+Description: 函数计算 kafka proxy
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
   - FcSinkConnector
@@ -85,4 +85,4 @@ Parameters:
       title: 执行失败死信队列 destination resource arn
       type: string
       default: acs:mns:xxx:xxx:/queues/xxx/messages
-      description: kafka 实例 topic name，数据将被放入该 topic 中
+      description: 函数计算 sink 的异步目标。失败时，相关信息将被推送到该队列中
