@@ -1,0 +1,82 @@
+Type: Application
+Name: OSSWindowConnector
+Provider:
+  - 阿里云
+Version: 0.0.3
+Description: 函数计算 oss window connector
+HomePage: https://github.com/devsapp/serverless-big-data
+Tags:
+  - FcSinkConnector
+Category: 函数Connector
+Service:
+  函数计算:
+    Runtime: Python 3.6
+    Authorities:
+      - AliyunFCFullAccess
+      - AliyunLogFullAccess
+      - AliyunOSSFullAccess
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - serviceName
+    - eventSchema
+    - batchOrNot
+    - cacheSizeInMB
+    - cacheTimeWindowInSec
+    - bucketName
+    - objectPath
+    - objectPrefix
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区
+    serviceName:
+      title: 服务名
+      type: string
+      default: oss_window_connector
+      description: 服务名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
+    eventSchema:
+      title: 消息传递的 shema 类型
+      type: string
+      default: cloudEvent
+      description: 输入消息 schema
+      enum:
+        - customized
+        - cloudEvent
+    batchOrNot:
+      title: 输入消息是否为批量消息
+      type: string
+      default: "False"
+      description: 输入消息的类型：是否为批量消息
+      enum:
+        - "True"
+        - "False"
+    cacheSizeInMB:
+      title: 缓冲区大小（MB, 每个 OSS 文件大小）
+      type: string
+      default: 128
+      description: OSS file size。每个消息会写入前述 oss 文件中，直到该文件大小达到 cacheSizeInMB。
+    cacheTimeWindowInSec:
+      title: 缓冲时间间隔，单位：秒
+      type: string
+      default: 300
+      description: 间隔时间越长，收集的数据越多，最终生成的 OSS 文件大小可能越大。
+    bucketName:
+      title: OSS 存储文件所在 bucket 名称
+      type: string
+      default: OSSBucket
+      description: OSS 存储文件所在 bucket 名称
+    objectPath:
+      title: 存储的 OSS object 的目录名。
+      type: string
+      default: KafkaTopic
+      description: 存储目标文件所在目录名。最终生成的文件名为 {objectPath}/{objectPrefix}_{num}
+    objectPrefix:
+      title: 存储的 OSS object 的文件前缀。
+      type: string
+      default: file
+      description: 存储目标文件名前缀。最终生成的文件名为 {objectPath}/{objectPrefix}_{num}
