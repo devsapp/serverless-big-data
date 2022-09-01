@@ -15,35 +15,9 @@ vars:
       vswitchIds: # 交换机 ID 列表
         - "{{vswitchIds}}"
   sinkEnv:
-    SINK_CONFIG: '{"eventSchema": "{{eventSchema}}","batchOrNot": "{{batchOrNot}}","bootstrapServers": "{{bootstrapServers}}","topicName": "{{topicName}}"}'
-
+    SINK_CONFIG: '{"bootstrapServers": "{{bootstrapServers}}","topicName": "{{topicName}}"}'
 
 services:
-  transform: #  服务名称。
-    component: devsapp/fc  # 组件名称。
-    actions:
-      pre-deploy: # 在deploy之前运行
-        - run: s build --use-docker      # 要执行的系统命令，类似于一种钩子的形式
-          path: ./
-    props: #  组件的属性值。
-      region: "{{region}}"
-      service: ${vars.service}
-      function:
-        name: transform
-        description: 'this is serverless sink connect framework transform function'
-        codeUri: './transform'
-        handler: 'index.handler'
-        memorySize: 128
-        runtime: nodejs12
-        timeout: 600
-      triggers:
-        - name: httpTrigger
-          type: http
-          config:
-            authType: anonymous
-            methods:
-              - POST
-
   sink: #  服务名称。
     component: devsapp/fc  # 组件名称。
     actions:
@@ -55,7 +29,7 @@ services:
       service: ${vars.service}
       function:
         name: sink
-        description: 'this is serverless sink connect framework sink function'
+        description: 'this is serverless kafka proxy function'
         codeUri: './sink'
         handler: 'index.handler'
         environmentVariables: ${vars.sinkEnv}
@@ -69,9 +43,13 @@ services:
         runtime: python3.9
         timeout: 600
         asyncConfiguration:
+          {{if failureDestination === 'True'}}
           maxAsyncRetryAttempts: 0
           destination:
             onFailure: "{{failureDestinationNotification}}"
+          {{else}}
+          maxAsyncRetryAttempts: 0
+          {{/if}}
       triggers:
         - name: httpTrigger
           type: http

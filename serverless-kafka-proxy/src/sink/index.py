@@ -4,13 +4,14 @@ import logging
 import os
 import traceback
 from retrying import retry
-import time
 
 from confluent_kafka import Producer
 
 from schema import Schema
 
 import sink_schema
+
+import transform
 
 logger = logging.getLogger()
 default_retry_times = 3
@@ -137,28 +138,12 @@ class Sink(object):
             Failed data list
 
         Raises:
-            MysqlException
+            Exception
         """
-		failed_data_list = []
-		if sink.sink_config['batchOrNot'] == "True":
-			for single_payload in payload:
-				if not sink_schema.validate_message_schema(single_payload):
-					try:
-						logger.error("validate failed error: %s",
-						             Schema(sink_schema.MESSAGE_SCHEMA, ignore_extra_keys=True).validate(
-							             single_payload))
-					except Exception as e:
-						pass
-					failed_data_list.append(single_payload)
-					continue
-				self._write_data(single_payload)
-
-		else:
-			self._write_data(payload)
-
+		self._write_data(payload)
 		self.producer.flush()
 
-		return failed_data_list
+		return
 
 
 sink = Sink()
@@ -219,37 +204,19 @@ def handler(environ, start_response):
 		request_body_size = int(environ.get('CONTENT_LENGTH', 0))
 	except (ValueError):
 		request_body_size = 0
+
 	request_body = environ['wsgi.input'].read(request_body_size)
 
-	print('request_body: {}'.format(request_body))
-	# do something here
+	# print('request_body: {}'.format(request_body))
+	transform.transform(request_body)
 
 	try:
-		payload = json.loads(request_body)
-		# only single data type is validated here.
-		if sink.sink_config['batchOrNot'] == "False" and sink.sink_config["eventSchema"] == "cloudEvent":
-			logger.info("check single data with schema: cloudEvent")
-			if not sink_schema.validate_message_schema(payload):
-				logger.error("validate failed error: %s",
-				             Schema(sink_schema.MESSAGE_SCHEMA, ignore_extra_keys=True).validate(payload))
-				raise Exception("MESSAGE_SCHEMA validate failed")
-
-		if not sink.is_connected():
-			sink.connect(sink.sink_config)
-			logger.error("unconnected sink target. Now reconnected")
-		payload["sink_timestamp"] = str(time.time())
-		failed_data_list = sink.deliver(json.dumps(payload))
-
-
-	# sink_api_handler(context, destination_config, transform(transform_config, payload))
+		sink.deliver(request_body)
 
 	except Exception as e:
 		logger.error(e)
 		traceback.print_exc()
 		raise e
-
-	if len(failed_data_list) != 0:
-		raise Exception(json.dumps({"success": False, "error_message": "not all data deliver succeeded", "failed_data": json.dumps(failed_data_list)}))
 
 	status = '200 OK'
 	response_headers = [('Content-type', 'text/plain')]
