@@ -14,35 +14,11 @@ vars:
       securityGroupId: "{{securityGroupId}}"    # 安全组ID
       vswitchIds: # 交换机 ID 列表
         - "{{vswitchIds}}"
-  transformEnv:
-    TRANSFORM_CONFIG: '{"eventSchema": "{{eventSchema}}","batchOrNot": "{{batchOrNot}}"}'
-    DESTINATION_CONFIG: '{"serviceName": "{{serviceName}}","functionName": "{{sinkFunctionName}}"}'
   sinkEnv:
-    SINK_CONFIG: '{"eventSchema": "{{eventSchema}}","batchOrNot": "{{batchOrNot}}","bootstrapServers": "{{bootstrapServers}}","topicName": "{{topicName}}"}'
+    SINK_CONFIG: '{"bootstrapServers": "{{bootstrapServers}}","topicName": "{{topicName}}"}'
 
 
 services:
-  transform: #  服务名称。
-    component: devsapp/fc  # 组件名称。
-    actions:
-      pre-deploy: # 在deploy之前运行
-        - run: s build --use-docker      # 要执行的系统命令，类似于一种钩子的形式
-          path: ./
-    props: #  组件的属性值。
-      region: "{{region}}"
-      service: ${vars.service}
-      function:
-        name: "{{transformFunctionName}}"
-        description: 'this is serverless sink connect framework transform function'
-        codeUri: './transform'
-        handler: 'index.handler'
-        environmentVariables: ${vars.transformEnv}
-        memorySize: 128
-        runtime: python3.9
-        timeout: 600
-        asyncConfiguration:
-          maxAsyncRetryAttempts: 0
-          statefulInvocation: true
   sink: #  服务名称。
     component: devsapp/fc  # 组件名称。
     actions:
@@ -53,12 +29,12 @@ services:
       region: "{{region}}"
       service: ${vars.service}
       function:
-        name: "{{sinkFunctionName}}"
-        description: 'this is serverless sink connect framework sink function'
+        name: sink
+        description: 'this is serverless kafka sink connector function'
         codeUri: './sink'
         handler: 'index.handler'
         environmentVariables: ${vars.sinkEnv}
-        memorySize: 512
+        memorySize: 256
         initializer: 'index.initialize'
         initializationTimeout: 60
         instanceLifecycleConfig:

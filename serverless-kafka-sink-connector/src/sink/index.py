@@ -10,6 +10,7 @@ from confluent_kafka import Producer
 from schema import Schema
 
 import sink_schema
+import transform
 
 logger = logging.getLogger()
 default_retry_times = 3
@@ -68,7 +69,7 @@ class Sink(object):
 		self.sink_config = sink_config
 
 		try:
-			conf = {'bootstrap.servers': sink_config["bootstrapServers"]}
+			conf = {'bootstrap.servers': sink_config["bootstrapServers"], "acks": 1}
 			self.producer = Producer(**conf)
 
 
@@ -138,26 +139,10 @@ class Sink(object):
         Raises:
             MysqlException
         """
-		failed_data_list = []
-		if sink.sink_config['batchOrNot'] == "True":
-			for single_payload in payload:
-				if not sink_schema.validate_message_schema(single_payload):
-					try:
-						logger.error("validate failed error: %s",
-						             Schema(sink_schema.MESSAGE_SCHEMA, ignore_extra_keys=True).validate(
-							             single_payload))
-					except Exception as e:
-						pass
-					failed_data_list.append(single_payload)
-					continue
-				self._write_data(single_payload)
-
-		else:
-			self._write_data(payload)
-
+		self._write_data(payload)
 		self.producer.flush()
 
-		return failed_data_list
+		return
 
 
 sink = Sink()
@@ -221,27 +206,15 @@ def handler(event, context):
 	failed_data_list = []
 	try:
 
-		payload = json.loads(event)
-		# only single data type is validated here.
-		if sink.sink_config['batchOrNot'] == "False" and sink.sink_config["eventSchema"] == "cloudEvent":
-			logger.info("check single data with schema: cloudEvent")
-			if not sink_schema.validate_message_schema(payload):
-				logger.error("validate failed error: %s",
-				             Schema(sink_schema.MESSAGE_SCHEMA, ignore_extra_keys=True).validate(payload))
-				raise Exception("MESSAGE_SCHEMA validate failed")
-
 		if not sink.is_connected():
 			sink.connect(sink.sink_config)
 			logger.error("unconnected sink target. Now reconnected")
-
-		failed_data_list = sink.deliver(event)
+		transform.transform(event)
+		sink.deliver(event)
 
 	except Exception as e:
 		logger.error(e)
 		traceback.print_exc()
 		raise e
-
-	if len(failed_data_list) != 0:
-		raise Exception(json.dumps({"success": False, "error_message": "not all data deliver succeeded", "failed_data": json.dumps(failed_data_list)}))
 
 	return json.dumps({"success": True, "error_message": "", "failed_data": json.dumps(failed_data_list)})
