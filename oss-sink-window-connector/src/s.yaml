@@ -8,33 +8,10 @@ vars:
     description: 'fc OSS window sink connector application'
     role:
     logConfig: auto
-  transformEnv:
-    TRANSFORM_CONFIG: '{"eventSchema": "{{eventSchema}}","batchOrNot": "{{batchOrNot}}"}'
-    DESTINATION_CONFIG: '{"serviceName": "{{serviceName}}","functionName": "sink"}'
   sinkEnv:
-    SINK_CONFIG: '{"region":"{{region}}", "eventSchema": "{{eventSchema}}","batchOrNot": "{{batchOrNot}}","cacheSizeInMB": {{cacheSizeInMB}},"cacheTimeWindowInSec": {{cacheTimeWindowInSec}},"bucketName": "{{bucketName}}","objectPath": "{{objectPath}}","objectPrefix": "{{objectPrefix}}"}'
-
+    SINK_CONFIG: '{"region":"{{region}}", "cacheSizeInMB": {{cacheSizeInMB}},"cacheTimeWindowInSec": {{cacheTimeWindowInSec}},"concurrency": {{concurrency}},"bucketName": "{{bucketName}}","objectPath": "{{objectPath}}","objectPrefix": "{{objectPrefix}}"}'
 
 services:
-  transform: #  服务名称。
-    component: devsapp/fc  # 组件名称。
-    actions:
-      pre-deploy: # 在deploy之前运行
-        - run: s build --use-docker      # 要执行的系统命令，类似于一种钩子的形式
-          path: ./
-    props: #  组件的属性值。
-      region: "{{region}}"
-      service: ${vars.service}
-      function:
-        name: transform
-        description: 'this is serverless oss sink connector transform function'
-        codeUri: './transform'
-        handler: 'index.handler'
-        memorySize: 128
-        environmentVariables: ${vars.transformEnv}
-        runtime: python3.9
-        timeout: 600
-
   sink: #  服务名称。
     component: devsapp/fc  # 组件名称。
     actions:

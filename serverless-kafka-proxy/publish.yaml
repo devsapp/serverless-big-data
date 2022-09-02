@@ -2,8 +2,8 @@ Type: Application
 Name: KafkaHTTPProxy
 Provider:
   - 阿里云
-Version: 0.0.9
-Description: 函数计算 kafka proxy
+Version: 0.0.10
+Description: 基于函数计算实现的 kafka proxy，通过 HTTP 方式将消息传递至 Kafka 特定 Topic
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
   - FcSinkConnector

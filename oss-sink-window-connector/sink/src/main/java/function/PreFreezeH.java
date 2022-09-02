@@ -11,7 +11,8 @@ public class PreFreezeH implements PreFreezeHandler {
     @Override
     public void preFreeze(Context context) throws IOException {
         context.getLogger().info("task done, now start release lock");
-        OssOperator.getOSSOperator(context).tryReleaseLock(context);
+        // lock was released in handler. prefreeze is not always called.
+        //OssOperator.getOSSOperator(context).tryReleaseLock(context);
     }
 }
 

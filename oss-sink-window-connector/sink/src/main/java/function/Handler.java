@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 
 import oss.UnRetryableException;
 import oss.OssOperator;
+import oss.TaskInfo;
 
 public class Handler implements StreamRequestHandler {
 
@@ -31,12 +32,13 @@ public class Handler implements StreamRequestHandler {
 
         // 创建OSSClient实例。
         OssOperator ossOP = OssOperator.getOSSOperator(context);
+        TaskInfo params = ossOP.generateTaskParams();
         try {
             // first, get oss file lock
-            context.getLogger().info("now start reserve lock");
-            ossOP.getLock(context);
+            context.getLogger().info(String.format("now start reserve lock, params: %s", params.str()));
+            ossOP.getLock(context, params);
             context.getLogger().info("reserve lock succeeded, now start upload file");
-            ossOP.startUploadAppendTask(context, payload);
+            ossOP.startUploadAppendTask(context, params, payload);
         } catch (UnRetryableException ce) {
             context.getLogger().fatal(String.format("failed to process message: %s", ce.toString()));
             throw new IOException(ce.toString());
@@ -45,7 +47,7 @@ public class Handler implements StreamRequestHandler {
             throw new IOException(e.toString());
         } finally {
             // todo: we use finaly and prefreeze to garatine the lock is released.
-            ossOP.tryReleaseLock(context);
+            ossOP.tryReleaseLock(context, params);
         }
 
         outputStream.write(new String("done").getBytes());

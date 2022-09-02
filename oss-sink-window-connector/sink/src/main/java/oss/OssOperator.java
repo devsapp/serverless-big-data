@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -24,8 +26,8 @@ public class OssOperator  {
 
     private static String lockFile = ".oss_file_lock";
     private static String metaFile = ".oss_meta_file";
-    private static String lockAndMetaFileObjectFmt = "%s/%s";
-    private static String dataFileObjectFmt = "%s/%s_%d";
+    private static String lockAndMetaFileObjectFmt = "%s/%s/%s_partition_%d";
+    private static String dataFileObjectFmt = "%s/%s/%s_partition_%d_num_%d";
 
     private OssOperator(Credentials creds) {
         String configStr = System.getenv("SINK_CONFIG");
@@ -54,12 +56,24 @@ public class OssOperator  {
         }
     }
 
-    public void getLock (Context context) throws OSSException, InterruptedException {
+    public TaskInfo generateTaskParams()  {
+        TaskInfo task = new TaskInfo();
+        task.setPartition((int)(Math.random()*config.getConcurrency()));
+        long currentTime=System.currentTimeMillis();
+        Date date = new Date(currentTime);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        task.setPath(dateFormat.format(date));
+        return task;
+    }
+
+    public void getLock (Context context, TaskInfo taskParams) throws OSSException, InterruptedException {
         // todo: timer to reset the lock file after some times
         do {
             try {
+                // object: bucketName/path/date/.lock_partition_x
                 PutObjectRequest putObjectRequest = new PutObjectRequest(config.getBucketName(),
-                        String.format(lockAndMetaFileObjectFmt, config.getObjectPath(), lockFile),
+                        String.format(lockAndMetaFileObjectFmt, config.getObjectPath(),
+                                taskParams.getPath(), lockFile, taskParams.getPartition()),
                         new ByteArrayInputStream(context.getRequestId().getBytes()));
 
                 // 指定上传文件操作时是否覆盖同名Object。
@@ -101,10 +115,11 @@ public class OssOperator  {
         context.getLogger().info(String.format("get lock for %s succeeded", context.getRequestId()));
     }
 
-    public void tryReleaseLock(Context context)  {
+    public void tryReleaseLock(Context context, TaskInfo taskParams)  {
         try {
             context.getLogger().info(String.format("now start releasing lock for request: %s", context.getRequestId()));
-            ossClient.deleteObject(config.getBucketName(), String.format(lockAndMetaFileObjectFmt, config.getObjectPath(), lockFile));
+            ossClient.deleteObject(config.getBucketName(),  String.format(lockAndMetaFileObjectFmt,
+                    config.getObjectPath(), taskParams.getPath(), lockFile, taskParams.getPartition()));
         } catch (OSSException oe) {
             context.getLogger().error("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");
@@ -128,12 +143,14 @@ public class OssOperator  {
         }
     }
 
-    private Meta getTaskMeta (Context context) throws IOException, ClientException, OSSException {
+    private Meta getTaskMeta (Context context, TaskInfo taskParams) throws IOException, ClientException, OSSException {
         context.getLogger().info(String.format("now trying to get task meta."));
         Meta meta = new Meta();
         // ossObject包含文件所在的存储空间名称、文件名称、文件元信息以及一个输入流。
         try {
-            OSSObject ossObject = ossClient.getObject(config.getBucketName(),  String.format(lockAndMetaFileObjectFmt, config.getObjectPath(), metaFile));
+            OSSObject ossObject = ossClient.getObject(config.getBucketName(),  String.format(lockAndMetaFileObjectFmt,
+                    config.getObjectPath(), taskParams.getPath(), metaFile, taskParams.getPartition()));
+
             // 读取文件内容。
             BufferedReader reader = new BufferedReader(new InputStreamReader(ossObject.getObjectContent()));
             while (true) {
@@ -170,7 +187,8 @@ public class OssOperator  {
         return meta;
     }
 
-    private Meta createTaskMetaFile (Context context, long currentDataFileID) throws ClientException, OSSException {
+    private Meta createTaskMetaFile (Context context, TaskInfo taskParams, long currentDataFileID)
+            throws ClientException, OSSException {
         context.getLogger().info(String.format("now trying to create task meta."));
 
         Meta meta = new Meta();
@@ -181,8 +199,8 @@ public class OssOperator  {
 
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(config.getBucketName(),
-                    String.format(lockAndMetaFileObjectFmt, config.getObjectPath(), metaFile),
-                    new ByteArrayInputStream(meta.toString().getBytes()));
+                    String.format(lockAndMetaFileObjectFmt, config.getObjectPath(), taskParams.getPath(),
+                            metaFile, taskParams.getPartition()), new ByteArrayInputStream(meta.toString().getBytes()));
 
             // 指定上传文件操作时是否覆盖同名Object。
             // 不指定x-oss-forbid-overwrite时，默认覆盖同名Object。
@@ -212,12 +230,12 @@ public class OssOperator  {
         return meta;
     }
 
-    private Meta updateTaskMetaFile (Context context, Meta meta) throws ClientException, OSSException {
+    private Meta updateTaskMetaFile (Context context, TaskInfo taskParams, Meta meta) throws ClientException, OSSException {
         context.getLogger().info(String.format("now trying to update task meta."));
         try {
             // 不指定x-oss-forbid-overwrite时，默认覆盖同名Object。
             PutObjectRequest putObjectRequest = new PutObjectRequest(config.getBucketName(),
-                    String.format("%s/%s", config.getObjectPath(), metaFile),
+                    String.format(lockAndMetaFileObjectFmt, config.getObjectPath(), taskParams.getPath(), metaFile, taskParams.getPartition()),
                     new ByteArrayInputStream(JSON.toJSONString(meta).getBytes()));
 
             // 上传文件。
@@ -237,11 +255,11 @@ public class OssOperator  {
         return meta;
     }
 
-    public void startUploadAppendTask (Context context, String payload) throws UnRetryableException {
+    public void startUploadAppendTask (Context context, TaskInfo taskParams, String payload) throws UnRetryableException {
         Meta meta = new Meta();
         // 1. get meta file
         try {
-            meta = getTaskMeta(context);
+            meta = getTaskMeta(context, taskParams);
         } catch (Exception ex) {
             context.getLogger().fatal("get Exception while get meta file: " + ex.toString());
             throw new UnRetryableException(String.format("get task meta failed, task aborted: %s", ex.toString()));
@@ -250,7 +268,7 @@ public class OssOperator  {
             // if meta file is empty, it means this is a new task.
             context.getLogger().info("start new oss file upload task.");
             try {
-                meta = createTaskMetaFile(context, 0L);
+                meta = createTaskMetaFile(context, taskParams, 0L);
             } catch (Exception e) {
                 context.getLogger().fatal(String.format("failed to create meta file: %s", e.toString()));
                 throw new UnRetryableException(String.format("failed to create meta file: %s", e.toString()));
@@ -272,7 +290,7 @@ public class OssOperator  {
         // 3. start append oss file
         long nextPosition;
         try {
-            nextPosition = appendFile(context, meta, payload);
+            nextPosition = appendFile(context, taskParams, meta, payload);
         } catch (Exception e) {
             context.getLogger().fatal(String.format("failed to append file: %s", e.toString()));
             throw new UnRetryableException(String.format("failed to append file: %s", e.toString()));
@@ -283,20 +301,20 @@ public class OssOperator  {
                 meta.getCurrentFileSizeInByte() + payload.length(), nextPosition));
         meta.setCurrentFileSizeInByte(nextPosition);
         try {
-            updateTaskMetaFile(context, meta);
+            updateTaskMetaFile(context, taskParams, meta);
         } catch (Exception e) {
             context.getLogger().fatal(String.format("failed to update meta file: %s", e.toString()));
             throw new UnRetryableException(String.format("failed to update meta file: %s", e.toString()));
         }
     }
 
-    private long appendFile(Context context, Meta taskMeta, String data) throws ClientException, OSSException {
+    private long appendFile(Context context, TaskInfo taskParams, Meta taskMeta, String data)
+            throws ClientException, OSSException {
         context.getLogger().info(String.format("now trying to append data to file."));
         boolean needRetry;
         long nextPosition = 0L;
-        String dataFileName = String.format(
-                dataFileObjectFmt, config.getObjectPath(), config.getObjectPrefix(), taskMeta.currentFileID
-        );
+        String dataFileName = String.format(dataFileObjectFmt, config.getObjectPath(),
+                taskParams.getPath(), config.getObjectPrefix(), taskParams.getPartition(), taskMeta.currentFileID);
         do {
             needRetry = false;
             try {

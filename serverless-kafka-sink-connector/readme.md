@@ -18,13 +18,6 @@
 
 </description>
 
-## 应用简介
-本应用可以将您的原始输入数据进过预处理之后，传输到您的 kafka topic 中。 
-
-Poller Service 从源端拉取数据后，再推送给本应用对应的 Sink Service，最终投递到下游服务中.
-
-如果您需要对数据进行转换，可以编写代码中的 transform 函数。
-
 ## 前期准备
 使用该项目，推荐您拥有以下的产品权限 / 策略：
 
@@ -60,11 +53,17 @@ Poller Service 从源端拉取数据后，再推送给本应用对应的 Sink Se
 <appdetail id="flushContent">
 
 
+## 应用简介
+### 基于函数计算实现的 kafka proxy，通过 SDK Invoke Function 的方式将消息传递至 Kafka 特定 Topic
+
+本应用可以将您的原始输入数据进过预处理之后，传输到您的 kafka topic 中。
+如果您需要对数据进行转换，可以编写代码中的 transform 函数。
+
 ## 使用步骤
 您可以通过应用中心或直接使用 s 工具进行部署。
 1. 准备资源：创建 Kafka 实例及对应 topic；
 2. 部署应用；参数按照需要进行填写；
-3. 进行测试。构建输入参数（dataSchema：cloudEvent）
+3. 进行测试。构建输入参数。示例：
 ```
 {
     "data":{

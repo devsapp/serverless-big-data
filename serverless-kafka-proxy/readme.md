@@ -53,6 +53,8 @@
 <appdetail id="flushContent">
 
 ## 应用简介
+### 基于函数计算实现的 kafka proxy，通过 HTTP 方式将消息传递至 Kafka 特定 Topic
+
 本应用可以将您的原始输入数据进过预处理之后，传输到您的 kafka topic 中。 函数的触发方式为 http POST 同步/异步触发(如果您需要指定触发时采用异步方式，即在 header 中添加：'x-fc-invocation-type': 'Async'),
   http 触发 url 可以从函数的触发器中获取。您也可以通过创建自定义域名，使用自定义域名进行触发。
 

@@ -2,8 +2,8 @@ Type: Application
 Name: KafkaSinkConnector
 Provider:
   - 阿里云
-Version: 0.0.7
-Description: 函数计算 kafka sink connector
+Version: 0.0.9
+Description: 基于函数计算实现的 kafka proxy，通过 SDK Invoke Function 的方式将消息传递至 Kafka 特定 Topic
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
   - FcSinkConnector

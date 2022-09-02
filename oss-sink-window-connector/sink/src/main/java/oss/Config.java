@@ -7,10 +7,8 @@ import lombok.Data;
 public class Config {
     @JSONField(name = "region")
     public String region;
-    @JSONField(name = "eventSchema")
-    public String eventSchema;
-    @JSONField(name = "batchOrNot")
-    public String batchOrNot;
+    @JSONField(name = "concurrency")
+    public long concurrency;
     @JSONField(name = "cacheSizeInMB")
     public long cacheSizeInMB;
     @JSONField(name = "cacheTimeWindowInSec")
