@@ -19,4 +19,6 @@ public class Config {
     public String objectPath;
     @JSONField(name = "objectPrefix")
     public String objectPrefix;
+    @JSONField(name = "objectShardingPath")
+    public String objectShardingPath;
 }

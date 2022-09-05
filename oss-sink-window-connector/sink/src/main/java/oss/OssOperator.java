@@ -61,7 +61,7 @@ public class OssOperator  {
         task.setPartition((int)(Math.random()*config.getConcurrency()));
         long currentTime=System.currentTimeMillis();
         Date date = new Date(currentTime);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat(config.getObjectShardingPath());
         task.setPath(dateFormat.format(date));
         return task;
     }

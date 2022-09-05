@@ -208,7 +208,7 @@ def handler(environ, start_response):
 	request_body = environ['wsgi.input'].read(request_body_size)
 
 	# print('request_body: {}'.format(request_body))
-	transform.transform(request_body)
+	transform.transform(request_body, context)
 
 	try:
 		sink.deliver(request_body)

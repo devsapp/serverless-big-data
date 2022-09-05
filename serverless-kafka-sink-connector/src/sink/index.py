@@ -139,7 +139,9 @@ class Sink(object):
         Raises:
             MysqlException
         """
-		self._write_data(payload)
+		for single_data in payload:
+			self._write_data(single_data)
+
 		self.producer.flush()
 
 		return
@@ -203,18 +205,15 @@ def handler(event, context):
          Exception.
     """
 
-	failed_data_list = []
 	try:
-
 		if not sink.is_connected():
 			sink.connect(sink.sink_config)
 			logger.error("unconnected sink target. Now reconnected")
-		transform.transform(event)
-		sink.deliver(event)
+		sink.deliver(transform.transform(event, context))
 
 	except Exception as e:
 		logger.error(e)
 		traceback.print_exc()
 		raise e
 
-	return json.dumps({"success": True, "error_message": "", "failed_data": json.dumps(failed_data_list)})
+	return json.dumps({"success": True, "error_message": ""})

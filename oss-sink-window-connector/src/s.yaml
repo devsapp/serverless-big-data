@@ -9,7 +9,7 @@ vars:
     role:
     logConfig: auto
   sinkEnv:
-    SINK_CONFIG: '{"region":"{{region}}", "cacheSizeInMB": {{cacheSizeInMB}},"cacheTimeWindowInSec": {{cacheTimeWindowInSec}},"concurrency": {{concurrency}},"bucketName": "{{bucketName}}","objectPath": "{{objectPath}}","objectPrefix": "{{objectPrefix}}"}'
+    SINK_CONFIG: '{"region":"{{region}}", "cacheSizeInMB": {{cacheSizeInMB}},"cacheTimeWindowInSec": {{cacheTimeWindowInSec}},"concurrency": {{concurrency}},"bucketName": "{{bucketName}}","objectPath": "{{objectPath}}","objectPrefix": "{{objectPrefix}}", "objectShardingPath": "{{objectShardingPath}}"}'
 
 services:
   sink: #  服务名称。

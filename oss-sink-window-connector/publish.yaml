@@ -2,7 +2,7 @@ Type: Application
 Name: OSSWindowConnector
 Provider:
   - 阿里云
-Version: 0.0.6
+Version: 0.0.8
 Description: 函数计算 oss window connector，支持窗口攒批将文件上传至 oss
 HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
@@ -23,6 +23,7 @@ Parameters:
     - serviceName
     - cacheSizeInMB
     - cacheTimeWindowInSec
+    - objectShardingPath
     - concurrency
     - bucketName
     - objectPath
@@ -33,6 +34,26 @@ Parameters:
       type: string
       default: cn-hangzhou
       description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-northeast-1
+        - eu-central-1
+        - eu-west-1
+        - us-west-1
+        - us-east-1
+        - ap-south-1
     serviceName:
       title: 服务名
       type: string
@@ -67,4 +88,15 @@ Parameters:
       title: 存储的 OSS object 的文件前缀。
       type: string
       default: file
-      description: 存储目标文件名前缀。最终生成的文件名为 {objectPath}/data/{objectPrefix}_{num}
+      description: 存储目标文件名前缀。最终生成的文件名为 {objectPath}/{objectShardFormat}/{objectPrefix}_{num}
+    objectShardingPath:
+      title: 目标按照时间分片的存储格式，最终会反映到 oss 对应的存储目录中。
+      type: string
+      default: YYYYMMdd
+      description: 决定文件存储的子目录。最终生成的文件名为 {objectPath}/{objectShardFormat}/{objectPrefix}_{num}
+      enum:
+        - YYYY/MM/dd/HH
+        - YYYY/MM/dd
+        - YYYYMMdd/HH
+        - YYYYMMddHH
+        - YYYYMMdd
