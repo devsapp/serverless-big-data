@@ -9,10 +9,10 @@ vars:
     internetAccess: true
     role:
     vpcConfig: # VPC配置, 配置后function可以访问指定VPC
-      vpcId: "{{vpcID}}"              # VPC ID
-      securityGroupId: "{{securityGroupID}}"   # 安全组ID
+      vpcId: "{{vpcId}}"              # VPC ID
+      securityGroupId: "{{securityGroupId}}"   # 安全组ID
       vswitchIds: # 交换机 ID 列表
-        - "{{vswitchID}}"
+        - "{{vswitchId}}"
     logConfig: auto
   Payload:
       consumer_service_name: "{{serviceName}}"
