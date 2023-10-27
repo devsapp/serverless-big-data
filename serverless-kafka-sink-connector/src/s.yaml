@@ -23,8 +23,7 @@ services:
     component: devsapp/fc  # 组件名称。
     actions:
       pre-deploy: # 在deploy之前运行
-        - run: s build --use-docker     # 要执行的系统命令，类似于一种钩子的形式
-          path: ./
+        - component: fc build --use-docker     # 要执行的系统命令，类似于一种钩子的形式
     props: #  组件的属性值。
       region: "{{region}}"
       service: ${vars.service}
