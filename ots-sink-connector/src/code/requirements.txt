@@ -1,0 +1,3 @@
+tablestore
+schema
+jinja2
