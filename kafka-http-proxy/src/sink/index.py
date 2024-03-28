@@ -3,14 +3,12 @@ import json
 import logging
 import os
 import traceback
+
 from retrying import retry
-
 from confluent_kafka import Producer
-
 from schema import Schema
 
 import sink_schema
-
 import transform
 
 logger = logging.getLogger()
@@ -190,23 +188,10 @@ def destroy(context):
     sink.close()
 
 
-def handler(environ, start_response):
-    context = environ['fc.context']
-    request_uri = environ['fc.request_uri']
-    for k, v in environ.items():
-        if k.startswith("HTTP_"):
-            # process custom request headers
-            pass
+def handler(event, context):
+    evt = json.loads(event)
+    request_body = evt["body"]
 
-    # get request_body
-    try:
-        request_body_size = int(environ.get('CONTENT_LENGTH', 0))
-    except (ValueError):
-        request_body_size = 0
-
-    request_body = environ['wsgi.input'].read(request_body_size)
-
-    # print('request_body: {}'.format(request_body))
     transform.transform(request_body, context)
 
     try:
@@ -217,8 +202,7 @@ def handler(environ, start_response):
         traceback.print_exc()
         raise e
 
-    status = '200 OK'
-    response_headers = [('Content-type', 'text/plain')]
-    start_response(status, response_headers)
-    # return value must be iterable
-    return [json.dumps({"success": True, "error_message": ""})]
+    return {
+        "body": "success",
+        "statusCode": 200
+    }
