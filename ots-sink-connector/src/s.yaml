@@ -20,7 +20,7 @@ services:
       region: "{{region}}"
       service:
         description: create by eventbridge, do not delete
-        role:
+        role: "{{serviceRoleARN}}"
         internetAccess: true
         name: "{{serviceName}}"
       function:
@@ -29,7 +29,7 @@ services:
         handler: index.handler
         initializer: index.initializer
         timeout: 30
-        memorySize: 128
+        memorySize: 256
         environmentVariables: ${vars.SINK_CONFIG}
         instanceConcurrency: 1
         instanceType: e1
