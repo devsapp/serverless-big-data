@@ -83,6 +83,8 @@
 
 本应用可以将您的原始输入数据进过预处理之后，传输到您的 kafka topic 中。如果您需要对数据进行转换，可以编写代码中的 transform 函数。
 
+使用 Serverless 函数计算实现 kafka proxy，您只需专注于业务逻辑的开发和创新，无需过多关注底层基础设施的管理和运维，平台会以弹性伸缩、高可靠性、按量付费、低延迟的方式托管运行您的业务。
+
 </appdetail>
 
 ## 使用流程
@@ -104,8 +106,9 @@
 |vswitchIds|kafka 实例所在 vswitchId|
 |securityGroupId|vpc 下安全组 id，用于内网访问 kafka|
 
-2. 成功部署应用。
-3. 进入函数页面，选择配置->触发器，复制公网地址。
+2. 成功部署应用后，通过函数资源信息跳转到函数页面，如下图。
+![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/zvskqrGBBAA6Sc18Ffvj.png)
+3. 在函数页面中，选择配置->触发器，复制公网地址。
 ![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/ug7SbshqF4sjyDFA6Egs.png)
 4. 执行下面命令，即发送一次请求，如果返回 success，即请求成功。
 ```
@@ -115,7 +118,6 @@ curl -X POST -d "test body"  {填写公网地址}
 ### 结果验证
 
 登陆到 [kafka 控制台](https://kafka.console.aliyun.com/) 查看目标 topic 中是否已经写入测试数据。
-
 
 </usedetail>
 

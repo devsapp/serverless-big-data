@@ -81,6 +81,10 @@ OSS Sink Connector
 
 本应用可以将您的原始输入数据写入到您创建应用时填写的 OSS bucket 中，如果您需要对数据进行转换，可以编写应用创建后的 transform 函数。否则只需调用 sink 函数即可。
 
+使用 Serverless 函数计算实现  oss proxy，您只需专注于业务逻辑的开发和创新，无需过多关注底层基础设施的管理和运维，平台会以弹性伸缩、高可靠性、按量付费、低延迟的方式托管运行您的业务。
+
+
+
 </appdetail>
 
 ## 使用流程
@@ -105,9 +109,10 @@ OSS Sink Connector
 |bucket|目标存储 bucket 名称|
 |object_prefix|目标存储 object前缀名|
 
-2. 成功部署应用。
-3. 进入函数页面，点击测试函数，可直接使用控制台提供的默认 event 值测试。
-
+2. 成功部署应用后，通过函数资源信息跳转到函数页面，如下图。
+![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/DajrdSADcDuag7jfD3wG.png)
+3. 在函数页面中，点击测试函数，可直接使用控制台提供的默认 event 值测试。
+![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/GF1aF2hGxBggZ5cfkuwG.png)
 ### 结果验证
 登陆到 [oss 控制台](https://oss.console.aliyun.com/) 查看测试数据是否成功写入目标 oss bucket。
 
