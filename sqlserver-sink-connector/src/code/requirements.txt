@@ -1,4 +1,0 @@
-PyMySQL
-psycopg2
-schema
-cloudevents

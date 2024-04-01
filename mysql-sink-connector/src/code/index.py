@@ -5,8 +5,9 @@ import ast
 import logging
 import os
 import json
-from schema import Schema
 import pymysql
+
+from schema import Schema
 
 from env import SQL_SERVER_SINK_CONFIG_SCHEMA
 
@@ -64,13 +65,8 @@ class Sink(object):
                 "ERROR: Unexpected error: Could not connect to MySql instance.")
             raise Exception(str(e))
 
-    # deal the message, 这里可以对消息进行处理后返回
-    def deal_message(self, ori_message):
-        validate_message_schema(ori_message)
-        return ori_message["data"];  
-
     # Write a entity to db table
-    def write(self, ori_message):
+    def write(self, evt):
         """
         发送消息
         CREATE Table Data (
@@ -78,7 +74,7 @@ class Sink(object):
             data TEXT(256)
         )
         """
-        sql = "INSERT INTO Data(data) VALUES ('%s') " % (json.dumps(ori_message))
+        sql = "INSERT INTO Data(id, data) VALUES ('%s', '%s') " % (evt['id'], evt['data'])
         print(sql)
         with self.conn.cursor() as cursor:
             cursor.execute(sql)
@@ -93,33 +89,21 @@ class Sink(object):
     def is_connected(self):
         return True
 
-
-def validate_message_schema(message):
-    return Schema(message_schema, ignore_extra_keys=True).validate(message)
-
-
 sink = Sink()
-
 
 def initializer(context):
     logger.info('initializing sink connect')
-    # how to resume connection when resumed from snapshot?
     sink.connect()
-
 
 # 函数入口
 def handler(event, context):
     if not sink.is_connected():
         sink.connect()
 
-    # event 要求为 cloud event，校验
     evt = json.loads(event)
-    # todo: check the cloud event 需要确定 event 格式，是 binary 还是 json
-
     print("handler event: ", evt)
-    body = sink.deal_message(evt)
-    sink.write(body)
-    return {"result": "success"}
+    sink.write(evt)
+    return {"success": "true"}
 
 
 def destroy(context):
