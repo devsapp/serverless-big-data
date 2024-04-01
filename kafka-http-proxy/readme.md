@@ -107,9 +107,9 @@
 |securityGroupId|vpc 下安全组 id，用于内网访问 kafka|
 
 2. 成功部署应用后，通过函数资源信息跳转到函数页面，如下图。
-![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/zvskqrGBBAA6Sc18Ffvj.png)
+![](https://img.alicdn.com/imgextra/i4/O1CN015k6OwJ1nCmf0mI68I_!!6000000005054-0-tps-1171-1132.jpg)
 3. 在函数页面中，选择配置->触发器，复制公网地址。
-![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/ug7SbshqF4sjyDFA6Egs.png)
+![](https://img.alicdn.com/imgextra/i4/O1CN01wvpNkw1mJp8EzM3sz_!!6000000004934-0-tps-1469-1057.jpg)
 4. 执行下面命令，即发送一次请求，如果返回 success，即请求成功。
 ```
 curl -X POST -d "test body"  {填写公网地址}

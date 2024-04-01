@@ -110,9 +110,9 @@ OSS Sink Connector
 |object_prefix|目标存储 object前缀名|
 
 2. 成功部署应用后，通过函数资源信息跳转到函数页面，如下图。
-![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/DajrdSADcDuag7jfD3wG.png)
+![](https://img.alicdn.com/imgextra/i4/O1CN01X5NF6A218ZdZi6YwM_!!6000000006940-0-tps-1072-952.jpg)
 3. 在函数页面中，点击测试函数，可直接使用控制台提供的默认 event 值测试。
-![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/GF1aF2hGxBggZ5cfkuwG.png)
+![](https://img.alicdn.com/imgextra/i1/O1CN013ZM3ii1NU1YXzZRdT_!!6000000001572-0-tps-913-820.jpg)
 ### 结果验证
 登陆到 [oss 控制台](https://oss.console.aliyun.com/) 查看测试数据是否成功写入目标 oss bucket。
 
