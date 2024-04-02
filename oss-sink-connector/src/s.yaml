@@ -1,35 +1,31 @@
-# 本 yaml 为示例，请勿直接使用
-edition: 1.0.0
-name: eventbridge-oss-sink
+edition: 3.0.0
+name: oss-sink-connector-v3
 access: default
 vars:
   SINK_CONFIG:
-    endpoint: "{{endpoint}}"
-    bucket: "{{bucket}}"
-    object_prefix: "{{object_prefix}}"
-services:
-  eventbridge-adb-oss:
-    component: devsapp/fc
+    PYTHONPATH: /code/python
+    endpoint: '{{endpoint}}'
+    bucket: '{{bucket}}'
+    object_prefix: '{{object_prefix}}'
+resources:
+  sink:
+    component: fc3
     actions:
-      pre-deploy: # 在deploy之前运行
-        - run: s build --use-docker
+      pre-deploy:
+        - component: fc3 build
           path: ./
     props:
-      region: "{{region}}"
-      service:
-        description: create by eventbridge, do not delete
-        role:
-        internetAccess: true
-        name: "{{serviceName}}"
-      function:
-        description: create by eventbridge, do not delete
-        runtime: python3
-        handler: index.handler
-        initializer: index.initializer
-        timeout: 30
-        memorySize: 128
-        environmentVariables: ${vars.SINK_CONFIG}
-        instanceConcurrency: 1
-        instanceType: e1
-        name: "{{functionName}}"
-        codeUri: ./code
+      region: '{{region}}'
+      description: this is serverless oss proxy function
+      runtime: python3
+      handler: index.handler
+      timeout: 30
+      memorySize: 128
+      environmentVariables: ${vars.SINK_CONFIG}
+      internetAccess: true
+      role: '{{serviceRoleARN}}'
+      functionName: '{{functionName}}'
+      code: ./code
+      instanceLifecycleConfig:
+        initializer:
+          handler: index.initializer
