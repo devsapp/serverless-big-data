@@ -81,7 +81,7 @@ AnalyticDB Sink Connector for MySQL
 
 本应用可以将您的原始输入数据写入到您创建应用时填写的 Analytic MySQL Table 中，如果您需要对数据进行转换，可以在函数中对 event 输入数据做加工处理。
 
-使用 Serverless 函数计算实现 Analytic MySQL proxy，您只需专注于业务逻辑的开发和创新，无需过多关注底层基础设施的管理和运维，平台会以弹性伸缩、高可靠性、按量付费、低延迟的方式托管运行您的业务。
+使用 Serverless 开发平台实现 Analytic MySQL proxy，您只需专注于业务逻辑的开发和创新，无需过多关注底层基础设施的管理和运维，平台会以弹性伸缩、高可靠性、按量付费、低延迟的方式托管运行您的业务。
 
 </appdetail>
 
