@@ -83,6 +83,8 @@
 
 本应用可以将您的原始输入数据进过预处理之后，传输到您的 kafka topic 中。如果您需要对数据进行转换，可以编写代码中的 transform 函数。
 
+使用 Serverless 函数计算实现 kafka proxy，您只需专注于业务逻辑的开发和创新，无需过多关注底层基础设施的管理和运维，平台会以弹性伸缩、高可靠性、按量付费、低延迟的方式托管运行您的业务。
+
 </appdetail>
 
 ## 使用流程
@@ -105,15 +107,16 @@
 |vswitchIds|kafka 实例所在 vswitchId|
 |securityGroupId|vpc 下安全组 id，用于内网访问 kafka|
 
-2. 成功部署应用。
+2. 成功部署应用后，通过函数资源信息跳转到函数页面，如下图。
+
+![](https://img.alicdn.com/imgextra/i1/O1CN015JHwEQ1Q1Zo2zfBoh_!!6000000001916-0-tps-1075-896.jpg)
+
 3. 进入函数页面，点击测试函数，如下图返回 true response 则表示请求成功。
-![](http://image.editor.devsapp.cn/BS2av6DGSuFggCyGwSjh4biiz7vvtbAwykZSgbrkE46eEycrle/k6GxvkAC2Zjdg9fuCiCb.png)
+![](https://img.alicdn.com/imgextra/i1/O1CN01oB0GWc1Mctc9SZHqm_!!6000000001456-0-tps-1784-929.jpg)
 
 ### 结果验证
 
 登陆到 [kafka 控制台](https://kafka.console.aliyun.com/) 查看目标 topic 中是否已经写入测试数据。
-
-
 
 </usedetail>
 
