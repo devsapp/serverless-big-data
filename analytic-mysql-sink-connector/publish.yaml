@@ -1,10 +1,11 @@
-Type: Application
-Name: AnalyticDBMysqlSinkConnector
+Edition: 3.0.0
+Type: Project
+Name:  analytic-mysql-sink-connector-v3
 Provider:
   - 阿里云
-Version: 0.0.13
+Version: 0.0.1
 Description: AnalyticDB Sink Connector for MySQL
-HomePage: https://github.com/devsapp/serverless-io-sink
+HomePage: https://github.com/devsapp/serverless-big-data
 Tags:
   - FcSinkConnector
   - EventBridge
@@ -14,12 +15,13 @@ Service:
     Runtime: Python 3.6
     Authorities:
       - AliyunFCFullAccess
+Organization: 阿里云函数计算（FC）
+Effective: Public
 Parameters:
   type: object
   additionalProperties: false # 不允许增加其他属性
   required: # 必填项
     - region
-    - serviceName
     - functionName
     - host
     - port
@@ -32,39 +34,48 @@ Parameters:
       type: string
       default: cn-hangzhou
       description: 创建应用所在的地区
-    serviceName:
-      title: 服务名
-      type: string
-      default: web-framework-${default-suffix}
-      pattern: "^[a-zA-Z_][a-zA-Z0-9-_]{0,127}$"
-      description: 服务名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
     functionName:
       title: 函数名
       type: string
       default: hapi
       description:  函数名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-64 之间
+    vpcId:
+      title: analytic mysql 实例所在 vpc id
+      type: string
+      default: vpc-******
+      description: VPC id。请注意需要填写函数计算支持的 az
+    vswitchIds:
+      title: analytic mysql 实例所在 vswitchId
+      type: string
+      default: vsw-*****
+      description: vpc 中 vswitch id，用于内网访问 analytic mysql
+    securityGroupId:
+      title: analytic mysql 实例所在 vpc 的 security group id
+      type: string
+      default: sg-*****
+      description: vpc 下安全组 id，用于内网访问 analytic mysql
     host:
-      title: mysql 数据库公网地址
+      title: analytic mysql 数据库公网地址
       type: string
       default: ''
       description: '数据库连接地址，请填写公网地址'
     port:
-      title: mysql 数据库端口号
+      title: analytic mysql 数据库端口号
       type: string
       default: '3306'
       description: '数据库端口号'
     user:
-      title: mysql 数据库登录用户名
+      title: analytic mysql 数据库登录用户名
       type: password
       default: ''
       description: '数据库访问账号，由于包含账号密钥信息，因此不建议将应用放到任何代码仓库(Github, Gitee, Gitlab 等)上允许公开访问'
     password:
-      title: mysql 数据库登录密码
+      title: analytic mysql 数据库登录密码
       type: password
       default: ''
       description: '数据库访问密码，由于包含账号密钥信息，因此不建议将应用放到任何代码仓库(Github, Gitee, Gitlab 等)上允许公开访问'
     database:
-      title: mysql 数据库库名
+      title: analytic mysql 数据库库名
       type: string
       default: ''
       description: '数据库名称，用于 sink 目标'

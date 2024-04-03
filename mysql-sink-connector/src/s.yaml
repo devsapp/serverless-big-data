@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: analytic-mysql-sink-connector-v3
+name: mysql-sink-connector-v3
 access: default
 vars:
   SINK_CONFIG:
@@ -9,14 +9,6 @@ vars:
     user: '{{user}}'
     password: '{{password}}'
     database: '{{database}}'
-template:
-  template_{{functionName}}:
-    internetAccess: true
-    vpcConfig:
-      vpcId: '{{vpcId}}'
-      securityGroupId: '{{securityGroupId}}'
-      vSwitchIds:
-        - '{{vswitchIds}}'
 resources:
   sink:
     component: fc3
@@ -26,7 +18,7 @@ resources:
           path: ./
     props:
       region: '{{region}}'
-      description: this is serverless adb mysql proxy function
+      description: this is serverless mysql proxy function
       runtime: python3
       handler: index.handler
       timeout: 30
@@ -39,5 +31,3 @@ resources:
         initializer:
           handler: index.initializer
           timeout: 20
-    extend:
-      name: template_{{functionName}}
