@@ -23,6 +23,11 @@ services:
         role:
         internetAccess: true
         name: "{{serviceName}}"
+        {{if vpcId !== "" && vswitchIds !== "" && securityGroupId !== ""}}vpcConfig: # VPC配置, 配置后function可以访问指定VPC
+          vpcId: "{{vpcId}}"              # VPC ID
+          securityGroupId: "{{securityGroupId}}"    # 安全组ID
+          vswitchIds: # 交换机 ID 列表
+            - "{{vswitchIds}}"{{/if}}
       function:
         description: create by eventbridge, do not delete
         runtime: python3
