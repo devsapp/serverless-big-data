@@ -8,7 +8,6 @@ vars:
     description: 'fc kafka serverless proxy application'
     internetAccess: true
     role:
-    logConfig: auto
     vpcConfig: # VPC配置, 配置后function可以访问指定VPC
       vpcId: "{{vpcId}}"              # VPC ID
       securityGroupId: "{{securityGroupId}}"    # 安全组ID
