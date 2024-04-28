@@ -1,4 +1,4 @@
-PyMySQL
-psycopg2
-schema
+PyMySQL==1.1.0
+psycopg2==2.9.9
+schema==0.7.5
 cloudevents
