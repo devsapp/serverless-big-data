@@ -25,7 +25,7 @@ services:
         name: "{{serviceName}}"
       function:
         description: create by eventbridge, do not delete
-        runtime: python3
+        runtime: python3.9
         handler: index.handler
         initializer: index.initializer
         timeout: 30
