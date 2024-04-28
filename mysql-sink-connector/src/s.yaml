@@ -19,7 +19,7 @@ resources:
     props:
       region: '{{region}}'
       description: this is serverless mysql proxy function
-      runtime: python3
+      runtime: python3.9
       handler: index.handler
       timeout: 30
       memorySize: 128
