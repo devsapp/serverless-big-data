@@ -2,7 +2,7 @@ Type: Application
 Name: OTSSinkConnector
 Provider:
   - 阿里云
-Version: 0.0.16
+Version: 0.0.19
 Description: OTS Sink Connector
 HomePage: https://github.com/devsapp/serverless-io-sink
 Tags:
@@ -11,7 +11,7 @@ Tags:
 Category: 函数Connector
 Service:
   函数计算:
-    Runtime: Python 3.9
+    Runtime: nodejs14
     Authorities:
       - AliyunFCFullAccess
 Parameters:
