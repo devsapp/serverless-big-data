@@ -1,0 +1,39 @@
+edition: 3.0.0
+name: sls-to-syslog-service-sink-connector-v3
+access: default
+vars:
+  sinkEnv:
+    PYTHONPATH: /code/python
+    SYSLOG_HOST: '{{syslogHost}}'
+    SYSLOG_PORT: '{{syslogPort}}'
+    SYSLOG_PROTOCOL: '{{syslogProtocol}}'
+template:
+  template_{{functionName}}:
+    internetAccess: true
+
+resources:
+  sink:
+    component: fc3
+    actions:
+      pre-deploy:
+        - component: fc3 build
+          path: ./
+    props:
+      region: '{{region}}'
+      role: '{{functionRoleArn}}'
+      description: this is serverless sls to syslog service sink connector
+      handler: index.handler
+      environmentVariables: ${vars.sinkEnv}
+      cpu: 0.35
+      memorySize: 512
+      diskSize: 512
+      instanceLifecycleConfig:
+        initializer:
+          handler: index.initialize
+          timeout: 60
+      runtime: python3.10
+      timeout: 600
+      functionName: '{{functionName}}'
+      code: ./sink
+    extend:
+      name: template_{{functionName}}
