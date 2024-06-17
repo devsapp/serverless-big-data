@@ -1,0 +1,105 @@
+Edition: 3.0.0
+Type: Project
+Name: sls-to-splunk-service-sink-connector-v3
+Provider:
+  - 阿里云
+Version: 0.0.1
+Description: 使用函数计算将 SLS 日志通过 Splunk HTTP 协议投递至 Splunk。
+HomePage: https://github.com/devsapp/serverless-big-data
+Tags:
+  - FcSinkConnector
+Category: 函数Connector
+Service:
+  函数计算:
+    Runtime: Python 3.6
+    Authorities:
+      - AliyunLogFullAccess
+
+Organization: 阿里云函数计算（FC）
+Effective: Public
+
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - functionName
+    - functionRoleArn
+    - splunkHTTPHost
+    - splunkHTTPPort
+    - splunkHTTPToken
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-northeast-1
+        - eu-central-1
+        - eu-west-1
+        - us-west-1
+        - us-east-1
+        - ap-south-1
+    functionName:
+      title: 函数名
+      type: string
+      default: sls_to_splunk_service_function
+      description: 函数名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
+    functionRoleArn:
+      title: 函数执行所拥有的角色 Arn
+      type: string
+      description: 函数所使用的角色 ARN，从而使函数可以获得角色所拥有的权限，此角色需至少包含 sls 服务的读权限或 GetCursorOrData 操作权限。(注意：在 RAM 控制台创建服务所使用的角色时，需要选择“阿里云服务”，并且“受信服务”需要选择“函数计算”。)
+    splunkHTTPHost:
+      title: Splunk HEC host
+      type: string
+      description: Splunk HEC host（数据接收端）
+    splunkHTTPPort:
+      title: Splunk HEC port
+      type: string
+      default: 80
+      description: Splunk HEC port（数据接收端）
+    splunkHTTPToken:
+      title: Splunk HEC token
+      type: string
+      description: Splunk HEC token（数据接收端）
+    splunkEnableHTTPS:
+      title: Splunk HEC 是否开启了 HTTPS
+      type: string
+      default: "False"
+      description: Splunk HEC 是否开启了 HTTPS
+    splunkHTTPTimeout:
+      title: Splunk HEC 的超时时间
+      type: string
+      default: "120"
+      description: Splunk HEC 的超时时间
+    splunkEnableSSLVerify:
+      title: Splunk HEC 是否开启 SSL Verfify 验证
+      type: string
+      default: "False"
+      description: Splunk HEC 是否开启 SSL Verfify 验证
+    splunkSourceType:
+      title: Splunk SourceType
+      type: string
+      description: Splunk SourceType
+    splunkIndex:
+      title: Splunk Index
+      type: string
+      description: Splunk Index
+    splunkSource:
+      title: Splunk Source
+      type: string
+      description: Splunk Source
