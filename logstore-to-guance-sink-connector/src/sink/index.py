@@ -19,9 +19,12 @@ class Sink(object):
                 "dataway": os.environ.get('GUANCE_DATAWAY', ''),
                 "token": os.environ.get('GUANCE_TOKEN', ''),
                 "measurement": os.environ.get('GUANCE_MEASUREMENT', ''), 
-                "timeout": int(os.environ.get('GUANCE_HTTP_TIMEOUT', '120')), # 可选
+                "timeout": int(os.environ.get('GUANCE_HTTP_TIMEOUT_IN_SECOND', '600')), # 可选
             }
-            
+
+            if self.sink_config["timeout"] > 600:
+                self.sink_config["timeout"] = 600
+ 
             self.client = requests.session()
             self.client.headers = {
                 'Content-Type': 'application/json',
@@ -64,7 +67,7 @@ class Sink(object):
                 req = self.client.post(self.url, data=data, timeout=self.sink_config["timeout"])
                 req.raise_for_status()
         except Exception as err:
-            logger.error("Failed to deliver logs to remote guance server ({0}). Exception: {1}".format(self.sink_config, err))
+            logger.error("Failed to deliver logs to remote guance server. Exception: {0}".format(err))
             raise err
         logger.info("Complete send data to remote")
     

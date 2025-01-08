@@ -1,5 +1,5 @@
 edition: 3.0.0
-name: sls-to-guance-service-sink-connector-v3
+name: logstore-to-guance-sink-connector-v3
 access: default
 vars:
   sinkEnv:
@@ -7,7 +7,7 @@ vars:
     GUANCE_DATAWAY: '{{guanceDataway}}'
     GUANCE_TOKEN: '{{guanceToken}}'
     GUANCE_MEASUREMENT: '{{guanceMeasurement}}'
-    GUANCE_HTTP_TIMEOUT: '{{guanceHTTPTimeout}}'
+    GUANCE_HTTP_TIMEOUT_IN_SECOND: '{{guanceHTTPTimeoutInSecond}}'
 template:
   template_{{functionName}}:
     internetAccess: true
