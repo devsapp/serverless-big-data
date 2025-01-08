@@ -1,0 +1,92 @@
+Edition: 3.0.0
+Type: Project
+Name: logstore-to-guance-sink-connector-v3
+Provider:
+  - 阿里云
+Version: 0.0.1
+Description: 使用函数计算将 SLS 日志通过 HTTP 协议投递至可观测云中。
+HomePage: https://github.com/devsapp/serverless-big-data
+Tags:
+  - FcSinkConnector
+Category: 函数Connector
+Service:
+  函数计算:
+    Runtime: Python 3.6
+    Authorities:
+      - AliyunLogFullAccess
+
+Organization: 阿里云函数计算（FC）
+Effective: Public
+
+Parameters:
+  type: object
+  additionalProperties: false # 不允许增加其他属性
+  required: # 必填项
+    - region
+    - functionName
+    - functionRoleArn
+    - guanceDataway
+    - guanceToken
+    - guanceMeasurement
+    - guanceHTTPTimeoutInSecond
+  properties:
+    region:
+      title: 地域
+      type: string
+      default: cn-hangzhou
+      description: 创建应用所在的地区
+      enum:
+        - cn-beijing
+        - cn-hangzhou
+        - cn-shanghai
+        - cn-qingdao
+        - cn-zhangjiakou
+        - cn-huhehaote
+        - cn-shenzhen
+        - cn-chengdu
+        - cn-hongkong
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-southeast-3
+        - ap-southeast-5
+        - ap-northeast-1
+        - eu-central-1
+        - eu-west-1
+        - us-west-1
+        - us-east-1
+        - ap-south-1
+    functionName:
+      title: 函数名
+      type: string
+      default: sls_to_guance_service_function
+      description: 函数名称，只能包含字母、数字、下划线和中划线。不能以数字、中划线开头。长度在 1-128 之间
+    functionRoleArn:
+      title: 函数执行所拥有的角色 Arn
+      type: string
+      default: ''
+      pattern: '^acs:ram::[0-9]*:role/.*$'
+      description: 函数所使用的角色 ARN，从而使函数可以获得角色所拥有的权限，此角色需至少包含 sls 服务的读权限或 GetCursorOrData 操作权限。(注意：在 RAM 控制台创建服务所使用的角色时，需要选择“阿里云服务”，并且“受信服务”需要选择“函数计算”。)
+      required: true
+      x-role:
+        name: fcacrrole
+        service: fc
+        authorities:
+          - AliyunFCDefaultRolePolicy
+          - AliyunLogFullAccess
+    guanceDataway:
+      title: 可观测云的 dataway 数据网关地址
+      type: string
+      description: 可观测云的 dataway 数据网关地址
+    guanceToken:
+      title: 可观测云的 dataway 数据网关的 Token
+      type: string
+      description: 可观测云的 dataway 数据网关的 Token
+    guanceMeasurement:
+      title: 数据源
+      type: string
+      description: 写入可观测云的数据源
+    guanceHTTPTimeoutInSecond:
+      title: 数据写入的超时时间
+      type: string
+      default: "600"
+      description: 数据写入的超时时间，最大超时时间为 600 秒，如果超过会调整为 600 秒
